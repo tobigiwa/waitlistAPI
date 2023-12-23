@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .email-container {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+            border: 2px solid #000000;
+        }
+
+        .header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .centered-content {
+            text-align: center;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #000000;
+            color: #ffffff !important; 
+            padding: 10px 20px;
+            text-decoration: none !important;
+            margin-top: 20px;
+}
+
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                box-shadow: none;
+                border: none;
+            }
+        }
+    </style>
+    <title>BlockRide Confirmation mail</title>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>BlockRide</h1>
+        </div>
+        <div class="content">
+            <h2>Hey {{ .Name }}, You're on the team 🤝🏾.</h2>
+            <p>Blockride has been built to make investment in transportation business seamless and transparent. The more
+                people use Blockride, the more commuting options for passengers.</p>
+            <p>Our aim is to gather 10 individuals from every country on our Waitlist. To assist us in achieving this
+                objective, we encourage you to invite others to sign up as well.</p>
+            <div class="centered-content">
+                <a href="/confirm?k={{ .Key }}" class="button"><b>Confirm your registration</b></a>
+                <p><i>No crypto experience required</i></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
