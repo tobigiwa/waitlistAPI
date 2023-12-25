@@ -1,20 +1,26 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
-	"runtime/debug"
 )
 
 const (
-	invalidFormData = 900
+	invalidUserDataError   = "User validation failed"
+	unmarshalError         = "Json unmarshaling Error"
+	marshalError           = "Json marshaling Error"
+	formParsingError       = "Error parsing request form data"
+	rediSetError           = "Error setting value to redis"
+	rediGetError           = "Error geting value to redis"
+	mailNotSentError       = "Error sending mail"
+	unrecognisedKey        = "unrecognisedKey/invalid url"
+	setToMongoDbError      = "Error saving to mongoDB"
+	deleteFromMongoDbError = "Error deleting from mongoDB"
 )
 
-func clientError(w http.ResponseWriter, errStatus int, err error) {
+func (a Application) clientError(w http.ResponseWriter, errStatus int, err error) {
 	http.Error(w, err.Error(), errStatus)
 }
 
-func serverError(w http.ResponseWriter, err error) {
-	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
-	http.Error(w, fmt.Sprintf("error: %s\ntrace:\n%s", err.Error(), trace), http.StatusInternalServerError)
+func (a Application) serverError(w http.ResponseWriter) {
+	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }

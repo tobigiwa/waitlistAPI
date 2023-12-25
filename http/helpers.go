@@ -1,13 +1,12 @@
 package http
 
 import (
+	"Blockride-waitlistAPI/env"
 	"Blockride-waitlistAPI/templ"
 	"bytes"
-	"errors"
 	"fmt"
 	"hash/fnv"
 	"html/template"
-	"os"
 
 	gomail "gopkg.in/mail.v2"
 )
@@ -29,12 +28,9 @@ const (
 func sendConfirmationMail(name, email, key string) error {
 
 	var (
-		tpl      bytes.Buffer
-		password string
-		err      error
-		s        = templData{Name: name, Key: key, email: email}
+		tpl bytes.Buffer
+		s   = templData{Name: name, Key: key, email: email}
 	)
-
 	m := gomail.NewMessage()
 	m.SetHeader("From", from)
 	m.SetHeader("To", s.email)
@@ -43,11 +39,7 @@ func sendConfirmationMail(name, email, key string) error {
 	prepareMail(s, &tpl)
 	m.SetBody("text/html", tpl.String())
 
-	if password, err = getEmailClientPassword(); err != nil {
-		return err
-	}
-
-	d := gomail.NewDialer(smtpHost, smtpPort, from, password)
+	d := gomail.NewDialer(smtpHost, smtpPort, from, env.GetEnvVar().EmailPswd)
 
 	if err := d.DialAndSend(m); err != nil {
 		return err
@@ -68,18 +60,6 @@ func prepareMail(data templData, mailBuf *bytes.Buffer) error {
 	}
 
 	return nil
-}
-
-func getEmailClientPassword() (string, error) {
-	var (
-		pwd string
-		ok  bool
-	)
-	if pwd, ok = os.LookupEnv("PASSWORD"); !ok {
-		return "", errors.New("No client email password")
-	}
-
-	return pwd, nil
 }
 
 // generateRedisKey returns a 10 digit string hash.

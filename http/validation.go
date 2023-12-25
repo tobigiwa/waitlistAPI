@@ -13,7 +13,9 @@ func validateSubscriber(s store.User) error {
 
 	validate = validator.New(validator.WithRequiredStructEnabled())
 
-	validate.RegisterValidation("isOncurve", isOncurve)
+	if err := validate.RegisterValidation("isOncurve", isOncurve); err != nil {
+		return err
+	}
 
 	if err := validate.Struct(s); err != nil {
 		return err

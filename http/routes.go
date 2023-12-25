@@ -16,5 +16,4 @@ func (a Application) Routes() *chi.Mux {
 	r.Post("/confirm", a.confirmAndSaveHandler)
 
 	return r
-
 }

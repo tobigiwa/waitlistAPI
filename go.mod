@@ -3,9 +3,11 @@ module Blockride-waitlistAPI
 go 1.21.4
 
 require (
+	github.com/Netflix/go-env v0.0.0-20220526054621-78278af1949d
 	github.com/blocto/solana-go-sdk v1.26.0
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-playground/validator/v10 v10.16.0
+	github.com/joho/godotenv v1.5.1
 	github.com/redis/go-redis/v9 v9.3.1
 	go.mongodb.org/mongo-driver v1.13.1
 	gopkg.in/mail.v2 v2.3.1
