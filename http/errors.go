@@ -1,20 +1,13 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 )
 
-const (
-	invalidUserDataError   = "User validation failed"
-	unmarshalError         = "Json unmarshaling Error"
-	marshalError           = "Json marshaling Error"
-	formParsingError       = "Error parsing request form data"
-	rediSetError           = "Error setting value to redis"
-	rediGetError           = "Error geting value to redis"
-	mailNotSentError       = "Error sending mail"
-	unrecognisedKey        = "unrecognisedKey/invalid url"
-	setToMongoDbError      = "Error saving to mongoDB"
-	deleteFromMongoDbError = "Error deleting from mongoDB"
+var (
+	ErrLinkExpired  = fmt.Errorf("link expired")
+	ErrDuplicateKey = fmt.Errorf("user with email account already exit")
 )
 
 func (a Application) clientError(w http.ResponseWriter, errStatus int, err error) {

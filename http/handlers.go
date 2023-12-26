@@ -1,41 +1,50 @@
 package http
 
 import (
-	"Blockride-waitlistAPI/env"
 	"Blockride-waitlistAPI/internal/store"
+	"context"
 	"errors"
 	"fmt"
-	"log"
 	"log/slog"
 	"net/http"
+	"strings"
 )
 
 func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := r.ParseForm(); err != nil {
 		a.clientError(w, http.StatusBadRequest, err)
-		a.Log(slog.LevelError, err, formParsingError)
+		a.logger.LogAttrs(context.TODO(), slog.LevelError, err.Error())
 		return
 	}
 
-	var subscriber store.User
-
-	if name := r.PostForm.Get("name"); name != "" {
+	var (
+		subscriber store.User
+		keyStr     string
+		err        error
+	)
+	if name := r.FormValue("name"); name != "" {
 		subscriber.Name = name
 	}
-	if email := r.PostForm.Get("email"); email != "" {
+	if email := r.FormValue("email"); email != "" {
 		subscriber.Email = email
 	}
-	if country := r.PostForm.Get("country"); country != "" {
-		subscriber.Country = country
+	if country := r.FormValue("country"); country != "" {
+		subscriber.Country = strings.ToUpper(country)
 	}
-	if splWalletAddr := r.PostForm.Get("splWalletAddr"); splWalletAddr != "" {
+	if splWalletAddr := r.FormValue("splWalletAddr"); splWalletAddr != "" {
 		subscriber.SplWalletAddr = splWalletAddr
 	}
 
+	if (subscriber == store.User{}) {
+		a.clientError(w, http.StatusBadRequest, fmt.Errorf("empty form data"))
+		a.logger.LogAttrs(context.TODO(), slog.LevelError, fmt.Errorf("empty form data").Error())
+		return
+	}
+
 	if err := validateSubscriber(subscriber); err != nil {
-		a.clientError(w, http.StatusBadRequest, err)
-		a.Log(slog.LevelError, err, invalidUserDataError)
+		a.clientError(w, http.StatusBadRequest, fmt.Errorf("validation error: %w", err))
+		a.logger.LogAttrs(context.TODO(), slog.LevelError, err.Error())
 		return
 	}
 
@@ -45,29 +54,20 @@ func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keyStr := generateRedisKey(fmt.Sprintf("%s:%s:%s", subscriber.Name, env.GetEnvVar().Nonce, subscriber.Email))
-
-	cachedUser := store.CachedUser{
-		RedisKeyStr: keyStr,
-		U:           subscriber,
-	}
-
-	if err := a.repository.SetcacheWithExpiration(keyStr, cachedUser); err != nil {
+	if keyStr, err = encryptUserInfo(subscriber); err != nil {
 		a.serverError(w)
-		a.Log(slog.LevelError, err, rediSetError)
+		a.logger.LogAttrs(context.TODO(), slog.LevelError, err.Error())
 		return
 	}
 
 	if err := sendConfirmationMail(subscriber.Name, subscriber.Email, keyStr); err != nil {
 		a.serverError(w)
-		a.Log(slog.LevelError, err, mailNotSentError)
+		a.logger.LogAttrs(context.TODO(), slog.LevelError, err.Error())
 		return
 	}
 
 	w.Header().Set("Location", "https://www.blockride.xyz/") // this still need a different url/page
 	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusOK)
-
-	log.Println("waitListHanler good")
 }
 
 func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Request) {
@@ -78,31 +78,32 @@ func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Reques
 		keyStr string
 	)
 
-	if keyStr := r.URL.Query().Get("k"); keyStr == "" {
+	if keyStr = r.URL.Query().Get("k"); keyStr == "" {
 		a.clientError(w, http.StatusBadRequest, errors.New("not a valid url"))
-		a.Log(slog.LevelInfo, err, unrecognisedKey)
+		a.logger.LogAttrs(context.TODO(), slog.LevelInfo, err.Error())
 		return
 	}
 
-	if user, err = a.repository.GetFromCache(keyStr); err != nil {
+	if user, err = dencryptUserInfo(keyStr); err != nil {
+		if errors.Is(err, ErrLinkExpired) {
+			a.clientError(w, http.StatusBadRequest, ErrLinkExpired)
+			return
+		}
 		a.serverError(w)
-		a.Log(slog.LevelError, err, rediGetError)
+		a.logger.LogAttrs(context.TODO(), slog.LevelError, err.Error())
 		return
 	}
 
 	if err := a.repository.SaveToDb(user); err != nil {
+		if strings.Contains(err.Error(), "duplicate key error") {
+			a.clientError(w, http.StatusBadRequest, ErrDuplicateKey)
+			return
+		}
 		a.serverError(w)
-		a.Log(slog.LevelError, err, setToMongoDbError)
-		return
-	}
-	if err := a.repository.DeleteFromCache(keyStr); err != nil {
-		a.serverError(w)
-		a.Log(slog.LevelError, err, deleteFromMongoDbError)
+		a.logger.LogAttrs(context.TODO(), slog.LevelError, err.Error())
 		return
 	}
 
 	w.Header().Set("Location", "https://www.blockride.xyz/")
 	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusSeeOther)
-
-	log.Println("confirmAndSaveHandler good")
 }

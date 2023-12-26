@@ -12,8 +12,8 @@ func (a Application) Routes() *chi.Mux {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Post("/waitlist", a.waitListHandler)
-	r.Post("/confirm", a.confirmAndSaveHandler)
+	r.Post("/joinwaitlist", a.waitListHandler)
+	r.Get("/confirmuser", a.confirmAndSaveHandler)
 
 	return r
 }

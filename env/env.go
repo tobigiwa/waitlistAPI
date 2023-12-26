@@ -17,22 +17,15 @@ type Environment struct {
 			Database   string `env:"MONGO_DATABASE,required=true"`
 			Collection string `env:"MONGO_COLLECTION,required=true"`
 		}
-
-		Redis struct {
-			Host     string `env:"REDIS_HOST,required=true"`
-			Port     string `env:"REDIS_PORT,default=6379"`
-			Password string `env:"REDIS_PASSWORD,required=true" json:"-" yaml:"-" toml:"-"`
-			User     string `env:"REDIS_USER,default=default"`
-			Db       int    `env:"DB,default=0"`
-		}
 	}
 
 	PORT struct {
 		HTTP string `env:"PORT,default=8080"`
 	}
 
-	Nonce     string `env:"NONCE,default=gopher"`
 	EmailPswd string `env:"EMAILPSWD,required=true"`
+
+	EncryptionKey string `env:"ENCRYPTIONKEY,required=true"`
 
 	Extras env.EnvSet
 }

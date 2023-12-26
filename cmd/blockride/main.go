@@ -6,7 +6,6 @@ import (
 	"Blockride-waitlistAPI/internal/store"
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -15,7 +14,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -40,12 +38,12 @@ func main() {
 		mongoDbClient *mongo.Client
 		err           error
 	)
-	uri := env.BuildURI(
-		env.GetEnvVar().Databases.Mongo.Username,
-		env.GetEnvVar().Databases.Mongo.Password,
-		env.GetEnvVar().Databases.Mongo.Host,
-	)
-	if mongoDbClient, err = store.NewMongoClient(uri); err != nil {
+	// uri := env.BuildURI(
+	// 	env.GetEnvVar().Databases.Mongo.Username,
+	// 	env.GetEnvVar().Databases.Mongo.Password,
+	// 	env.GetEnvVar().Databases.Mongo.Host,
+	// )
+	if mongoDbClient, err = store.NewMongoClient("mongodb://localhost:27017/"); err != nil {
 		log.Fatalf("could not setup MongoDB connection: %v", err)
 	}
 	log.Println("MongoDB connection successful")
@@ -58,28 +56,12 @@ func main() {
 		Options: options.Index().SetUnique(true),
 	}
 	if _, err := mongoDbCollection.Indexes().CreateOne(context.TODO(), indexModel); err != nil {
-		panic(fmt.Errorf("could not index `email` field in MongoDB err: %v", err))
+		log.Fatalf("could not index `email` field in MongoDB err: %v", err)
 	}
-
-	defer func() {
-		// handles MongoDB disconnection
-		if err = mongoDbClient.Disconnect(context.TODO()); err != nil {
-			panic(fmt.Errorf("could not successfully discconnect MongoDB connections err: %v", err))
-		}
-	}()
-
-	// setup Redis connection
-	redisOpts := &redis.Options{
-		Addr:     env.GetEnvVar().Databases.Redis.Host,
-		Username: env.GetEnvVar().Databases.Redis.User,
-		Password: env.GetEnvVar().Databases.Redis.Password,
-		DB:       env.GetEnvVar().Databases.Redis.Db,
-	}
-	rdb := redis.NewClient(redisOpts)
-	log.Println("Redis connection successful")
+	log.Println("MongoDB collection indexed by `email` field successfully")
 
 	// setup Application Server
-	app := blockride.NewApplication(mongoDbCollection, rdb, logger)
+	app := blockride.NewApplication(mongoDbCollection, logger)
 
 	srv := &http.Server{
 		Addr:         ":" + env.GetEnvVar().PORT.HTTP,
@@ -92,7 +74,6 @@ func main() {
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	defer close(done)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -100,12 +81,20 @@ func main() {
 		}
 	}()
 
+	log.Println("Server is Running")
 	<-done
+	close(done)
 	log.Println("Server Stopped")
 
 	// Graceful shutdown
 	if err := srv.Shutdown(context.TODO()); err != nil {
 		log.Fatalf("Server Shutdown Failed:%+v", err)
 	}
+
+	// handles MongoDB disconnection
+	if err = mongoDbClient.Disconnect(context.TODO()); err != nil {
+		log.Fatalf("could not successfully discconnect MongoDB connections err: %v", err)
+	}
+	log.Println("MongoDB disconnection successful")
 
 }
