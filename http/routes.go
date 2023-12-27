@@ -40,6 +40,7 @@ func (a Application) Routes() *chi.Mux {
 
 	r.Post("/joinwaitlist", a.waitListHandler)
 	r.Get("/confirmuser", a.confirmAndSaveHandler)
+	r.Get("/healthcheck", a.healthcheckHandler)
 
 	return r
 }

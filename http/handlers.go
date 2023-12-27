@@ -1,6 +1,7 @@
 package http
 
 import (
+	"Blockride-waitlistAPI/env"
 	"Blockride-waitlistAPI/internal/store"
 	"context"
 	"errors"
@@ -106,4 +107,20 @@ func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Location", "https://www.blockride.xyz/")
 	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusSeeOther)
+}
+
+func (app *Application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
+
+	env := struct {
+		server_status    string
+		application_info map[string]string
+	}{
+		server_status: "available",
+		application_info: map[string]string{
+			"enviroment": env.GetEnvVar().Server.Env,
+			"version":    env.GetEnvVar().Server.Version,
+		},
+	}
+
+	w.Write([]byte(fmt.Sprintf("%+v", env)))
 }
