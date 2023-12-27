@@ -23,20 +23,16 @@ type templData struct {
 	Key  string
 }
 
-const (
-	from     = "tobigiwa@zohomail.com"
-	smtpHost = "smtp.zoho.com"
-	smtpPort = 465
-)
-
 func sendConfirmationMail(name, email, key string) error {
 
 	var (
-		tpl  bytes.Buffer
-		s    = templData{Name: name, Key: key}
-		data []byte
-		err  error
+		from     = env.GetEnvVar().Mail.EmailAcc
+		tpl      bytes.Buffer
+		s        = templData{Name: name, Key: key}
+		data     []byte
+		err      error
 	)
+	
 	m := gomail.NewMessage()
 	m.SetHeader("From", from)
 	m.SetHeader("To", email)
@@ -58,7 +54,7 @@ func sendConfirmationMail(name, email, key string) error {
 
 	m.SetBody("text/html", tpl.String())
 
-	d := gomail.NewDialer(smtpHost, smtpPort, from, env.GetEnvVar().EmailPswd)
+	d := gomail.NewDialer(env.GetEnvVar().Mail.EmailSmtpServerHost, env.GetEnvVar().Mail.EmailSmtpServerPort, from, env.GetEnvVar().Mail.EmailPswd)
 
 	if err := d.DialAndSend(m); err != nil {
 		return err

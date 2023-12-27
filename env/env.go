@@ -11,19 +11,25 @@ type Environment struct {
 	Databases struct {
 		Mongo struct {
 			Host       string `env:"MONGO_HOST,required=true"`
-			Port       string `env:"MONGO_PORT,default=27017"`
 			Username   string `env:"MONGO_USERNAME,required=true" `
 			Password   string `env:"MONGO_PASSWORD,required=true" json:"-" yaml:"-" toml:"-"`
-			Database   string `env:"MONGO_DATABASE,required=true"`
-			Collection string `env:"MONGO_COLLECTION,required=true"`
+			Database   string `env:"MONGO_DATABASE,default=waitlist"`
+			Collection string `env:"MONGO_COLLECTION,default=users"`
 		}
 	}
 
-	PORT struct {
-		HTTP string `env:"PORT,default=8080"`
+	Server struct {
+		Port    string `env:"PORT,default=8090"`
+		Env     string `env:"ENV,default=development"`
+		Version string `env:"VERSION"`
 	}
 
-	EmailPswd string `env:"EMAILPSWD,required=true"`
+	Mail struct {
+		EmailAcc            string `env:"EMAILACC,required=true"`
+		EmailPswd           string `env:"EMAILPSWD,required=true"`
+		EmailSmtpServerHost string `env:"SMTPHOST,required=true"`
+		EmailSmtpServerPort int    `env:"SMTPPORT,required=true"`
+	}
 
 	EncryptionKey string `env:"ENCRYPTIONKEY,required=true"`
 
@@ -31,6 +37,7 @@ type Environment struct {
 }
 
 var once sync.Once
+
 var environment Environment
 
 func LoadAllEnvVars() {
@@ -53,6 +60,8 @@ func _init() {
 	environment.Extras = es
 }
 
+// GetEnvVar gets a particular env. variable and should only be
+// called after LoadAllEnvVars() has be called.
 func GetEnvVar() Environment {
 	LoadAllEnvVars()
 	return environment
