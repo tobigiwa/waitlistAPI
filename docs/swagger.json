@@ -1,0 +1,188 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "BlockRide waitlist-backend API endpoints.",
+        "title": "BlockRide waitlist-backend",
+        "contact": {
+            "url": "https://www.blockride.xyz/"
+        },
+        "x-logo": {
+            "altText": "example logo",
+            "backgroundColor": "#000000",
+            "href": "https://example.com/img.png",
+            "url": "https://example.com/img.png"
+        }
+    },
+    "paths": {
+        "/confirmuser": {
+            "get": {
+                "description": "confirms user registration from email link",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "application"
+                ],
+                "summary": "confirms user registration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "BASE64 ENCODED STRING",
+                        "name": "k",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "REDIRECT TO BLOCKRIDE HOMEPAGE",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "CLIENT ERROR: BAD REQUEST, KEY MISSING IN REQUEST",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "CLIENT ERROR: NOT FOUND, LINK/KEY EXPIRED",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "CLIENT ERROR: USER WITH EMAIL ALREADY EXIST",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "SERVER ERROR: INTERNAL SERVRER ERROR",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/healthcheck": {
+            "get": {
+                "description": "return application status",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "status"
+                ],
+                "summary": "Report application status",
+                "responses": {
+                    "200": {
+                        "description": "Server_status:available",
+                        "schema": {
+                            "$ref": "#/definitions/http.ServerStatus"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL SERVRER ERROR",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/joinwaitlist": {
+            "post": {
+                "description": "sends user registration email",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "application"
+                ],
+                "summary": "sends user registration email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Users any preferred name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "email",
+                        "description": "valid email address",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "country",
+                        "name": "country",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "SPL wallet Address",
+                        "name": "splWalletAddr",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "CLIENT ERROR: BAD REQUEST, INVALID USER FORM DATA",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "CLIENT ERROR: USER WITH EMAIL ALREADY EXIST",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "SERVER ERROR: INTERNAL SERVRER ERROR",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "http.ServerStatus": {
+            "type": "object",
+            "properties": {
+                "application_Env": {
+                    "type": "string"
+                },
+                "application_Version": {
+                    "type": "string"
+                },
+                "server_status": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "externalDocs": {
+        "description": "OpenAPI"
+    }
+}

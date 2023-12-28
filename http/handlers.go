@@ -4,6 +4,7 @@ import (
 	"Blockride-waitlistAPI/env"
 	"Blockride-waitlistAPI/internal/store"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -11,6 +12,22 @@ import (
 	"strings"
 )
 
+// WaitListHandler
+//
+//	@Summary		sends user registration email
+//	@Description	sends user registration email
+//	@Tags			application
+//	@Accept			x-www-form-urlencoded
+//	@Produce		json
+//	@Success		200				{string}	string	"OK"
+//	@Param			name			formData	string	true	"Users any preferred name"
+//	@Param			email			formData	string	true	"valid email address"	Format(email)
+//	@Param			country			formData	string	true	"country"
+//	@Param			splWalletAddr	formData	string	true	"SPL wallet Address"
+//	@Failure		400				{string}	string	"CLIENT ERROR: BAD REQUEST, INVALID USER FORM DATA"
+//	@Failure		409				{string}	string	"CLIENT ERROR: USER WITH EMAIL ALREADY EXIST"
+//	@Failure		500				{string}	string	"SERVER ERROR: INTERNAL SERVRER ERROR"
+//	@Router			/joinwaitlist [post]
 func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := r.ParseForm(); err != nil {
@@ -24,16 +41,16 @@ func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 		keyStr     string
 		err        error
 	)
-	if name := r.FormValue("name"); name != "" {
+	if name := r.PostForm.Get("name"); name != "" {
 		subscriber.Name = name
 	}
-	if email := r.FormValue("email"); email != "" {
+	if email := r.PostForm.Get("email"); email != "" {
 		subscriber.Email = email
 	}
-	if country := r.FormValue("country"); country != "" {
+	if country := r.PostForm.Get("country"); country != "" {
 		subscriber.Country = strings.ToUpper(country)
 	}
-	if splWalletAddr := r.FormValue("splWalletAddr"); splWalletAddr != "" {
+	if splWalletAddr := r.PostForm.Get("splWalletAddr"); splWalletAddr != "" {
 		subscriber.SplWalletAddr = splWalletAddr
 	}
 
@@ -71,6 +88,19 @@ func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusOK)
 }
 
+// ConfirmAndSaveHandler
+//
+//	@Summary		confirms user registration
+//	@Description	confirms user registration from email link
+//	@Tags			application
+//	@Produce		json
+//	@Param			k	query		string	true	"BASE64 ENCODED STRING"
+//	@Success		200	{string}	string	"REDIRECT TO BLOCKRIDE HOMEPAGE"
+//	@Failure		400	{string}	string	"CLIENT ERROR: BAD REQUEST, KEY MISSING IN REQUEST"
+//	@Failure		404	{string}	string	"CLIENT ERROR: NOT FOUND, LINK/KEY EXPIRED"
+//	@Failure		409	{string}	string	"CLIENT ERROR: USER WITH EMAIL ALREADY EXIST"
+//	@Failure		500	{string}	string	"SERVER ERROR: INTERNAL SERVRER ERROR"
+//	@Router			/confirmuser [get]
 func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Request) {
 
 	var (
@@ -87,7 +117,7 @@ func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Reques
 
 	if user, err = dencryptUserInfo(keyStr); err != nil {
 		if errors.Is(err, ErrLinkExpired) {
-			a.clientError(w, http.StatusBadRequest, ErrLinkExpired)
+			a.clientError(w, http.StatusNotFound, ErrLinkExpired)
 			return
 		}
 		a.serverError(w)
@@ -97,7 +127,7 @@ func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Reques
 
 	if err := a.repository.SaveToDb(user); err != nil {
 		if strings.Contains(err.Error(), "duplicate key error") {
-			a.clientError(w, http.StatusBadRequest, ErrDuplicateKey)
+			a.clientError(w, http.StatusConflict, ErrDuplicateKey)
 			return
 		}
 		a.serverError(w)
@@ -106,21 +136,41 @@ func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	w.Header().Set("Location", "https://www.blockride.xyz/")
-	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusSeeOther)
+	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusOK)
 }
 
-func (app *Application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
+type ServerStatus struct {
+	Server_status       string
+	Application_Env     string
+	Application_Version string
+}
 
-	env := struct {
-		server_status    string
-		application_info map[string]string
-	}{
-		server_status: "available",
-		application_info: map[string]string{
-			"enviroment": env.GetEnvVar().Server.Env,
-			"version":    env.GetEnvVar().Server.Version,
-		},
+// HealthcheckHandler
+//
+//	@Summary		Report application status
+//	@Description	return application status
+//	@Tags			status
+//	@Produce		json
+//	@Success		200	{object}	http.ServerStatus	"Server_status:available"
+//	@Failure		500	{string}	string				"INTERNAL SERVRER ERROR"
+//	@Router			/healthcheck [get]
+func (a Application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
+
+	env := ServerStatus{
+		Server_status:       "available",
+		Application_Env:     env.GetEnvVar().Server.Env,
+		Application_Version: env.GetEnvVar().Server.Version,
+	}
+	var (
+		byteArr []byte
+		err     error
+	)
+	if byteArr, err = json.Marshal(env); err != nil {
+		a.logger.LogAttrs(context.TODO(), slog.LevelError, "marshling error from healthcheckHandler"+err.Error())
+		a.serverError(w)
+		return
 	}
 
-	w.Write([]byte(fmt.Sprintf("%+v", env)))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(byteArr)
 }

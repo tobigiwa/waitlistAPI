@@ -1,14 +1,28 @@
 BINARY_NAME=BlockRide
 
 run:
+	@echo "Running server"
 	@cd bin/; ./${BINARY_NAME}
 
-compile:
-	@echo "building binary"
+tidy:
+	@echo "downloading application dependencies"
+	@go mod tidy
+
+build:
+	@echo "Building binary"
 	@go build -o bin/${BINARY_NAME} cmd/blockride/main.go
 
 test:
 	@echo "Running all test"
 	@go test ./... -v
 
-start: build start
+swagger:
+	@echo "Generating swagger"
+	@swag init -d cmd/blockride/,http/
+	@swag fmt --exclude internal/,templ/,env/
+
+setup: tidy swagger build 
+
+start : run
+
+dev: setup run

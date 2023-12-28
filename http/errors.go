@@ -9,7 +9,6 @@ var (
 	ErrLinkExpired  = fmt.Errorf("link expired")
 	ErrDuplicateKey = fmt.Errorf("user with email account already exit")
 )
-
 func (a Application) clientError(w http.ResponseWriter, errStatus int, err error) {
 	http.Error(w, err.Error(), errStatus)
 }

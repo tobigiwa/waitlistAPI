@@ -1,0 +1,125 @@
+definitions:
+  http.ServerStatus:
+    properties:
+      application_Env:
+        type: string
+      application_Version:
+        type: string
+      server_status:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+info:
+  contact:
+    url: https://www.blockride.xyz/
+  description: BlockRide waitlist-backend API endpoints.
+  title: BlockRide waitlist-backend
+  x-logo:
+    altText: example logo
+    backgroundColor: '#000000'
+    href: https://example.com/img.png
+    url: https://example.com/img.png
+paths:
+  /confirmuser:
+    get:
+      description: confirms user registration from email link
+      parameters:
+      - description: BASE64 ENCODED STRING
+        in: query
+        name: k
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: REDIRECT TO BLOCKRIDE HOMEPAGE
+          schema:
+            type: string
+        "400":
+          description: 'CLIENT ERROR: BAD REQUEST, KEY MISSING IN REQUEST'
+          schema:
+            type: string
+        "404":
+          description: 'CLIENT ERROR: NOT FOUND, LINK/KEY EXPIRED'
+          schema:
+            type: string
+        "409":
+          description: 'CLIENT ERROR: USER WITH EMAIL ALREADY EXIST'
+          schema:
+            type: string
+        "500":
+          description: 'SERVER ERROR: INTERNAL SERVRER ERROR'
+          schema:
+            type: string
+      summary: confirms user registration
+      tags:
+      - application
+  /healthcheck:
+    get:
+      description: return application status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Server_status:available
+          schema:
+            $ref: '#/definitions/http.ServerStatus'
+        "500":
+          description: INTERNAL SERVRER ERROR
+          schema:
+            type: string
+      summary: Report application status
+      tags:
+      - status
+  /joinwaitlist:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: sends user registration email
+      parameters:
+      - description: Users any preferred name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: valid email address
+        format: email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: country
+        in: formData
+        name: country
+        required: true
+        type: string
+      - description: SPL wallet Address
+        in: formData
+        name: splWalletAddr
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 'CLIENT ERROR: BAD REQUEST, INVALID USER FORM DATA'
+          schema:
+            type: string
+        "409":
+          description: 'CLIENT ERROR: USER WITH EMAIL ALREADY EXIST'
+          schema:
+            type: string
+        "500":
+          description: 'SERVER ERROR: INTERNAL SERVRER ERROR'
+          schema:
+            type: string
+      summary: sends user registration email
+      tags:
+      - application
+swagger: "2.0"

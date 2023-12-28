@@ -16,11 +16,24 @@ import (
 
 	"strings"
 
+	"Blockride-waitlistAPI/docs"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+//	@title						BlockRide waitlist-backend
+//	@description				BlockRide waitlist-backend API endpoints.
+//	@x-logo						{"url": "https://example.com/img.png", "backgroundColor": "#000000", "altText": "example logo", "href": "https://example.com/img.png"}
+//
+// contact.name   BlockRide
+//
+//	@contact.url				https://www.blockride.xyz/
+//
+// contact.email  giwaoluwatobi@gmail.com
+//
+//	@externalDocs.description	OpenAPI
 func main() {
 
 	// logging services
@@ -34,6 +47,9 @@ func main() {
 
 	// load.env variables
 	env.LoadAllEnvVars()
+
+	docs.SwaggerInfo.Version = env.GetEnvVar().Server.Version
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	log.Println("Server is configured to run in", strings.ToUpper(env.GetEnvVar().Server.Env), "mode, at version -", strings.ToUpper(env.GetEnvVar().Server.Version))
 
