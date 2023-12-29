@@ -6,12 +6,13 @@ WORKDIR /app
 
 COPY . /app
 
-RUN make setup
+RUN go mod tidy
+RUN go build -o bin/BlockRide cmd/blockride/main.go
 
 FROM alpine 
 
 WORKDIR /root/
 
-COPY --from=builder /app/bin/ /root/
+COPY --from=builder /app/bin/BlockRide /root/
 
-CMD /bin/BlockRide
+CMD ./BlockRide

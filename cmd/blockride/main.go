@@ -47,6 +47,7 @@ func main() {
 
 	// load.env variables
 	env.LoadAllEnvVars()
+	env.SetDefaults()
 
 	docs.SwaggerInfo.Version = env.GetEnvVar().Server.Version
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}

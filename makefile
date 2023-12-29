@@ -21,8 +21,7 @@ swagger:
 	@swag init -d cmd/blockride/,http/
 	@swag fmt --exclude internal/,templ/,env/
 
-setup: tidy swagger build 
+dev: tidy swagger build run
 
-start : run
+prod: tidy build
 
-dev: setup run

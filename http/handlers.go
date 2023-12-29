@@ -67,7 +67,7 @@ func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if a.repository.CheckIfUserExist(subscriber) {
-		w.Header().Set("Location", "https://www.blockride.xyz/") // this still need a different url/page
+		w.Header().Set("Location", "https://www.blockride.xyz/")
 		http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusConflict)
 		return
 	}
@@ -84,7 +84,7 @@ func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Location", "https://www.blockride.xyz/") // this still need a different url/page
+	w.Header().Set("Location", "https://www.blockride.xyz/")
 	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusOK)
 }
 
@@ -127,9 +127,11 @@ func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Reques
 
 	if err := a.repository.SaveToDb(user); err != nil {
 		if strings.Contains(err.Error(), "duplicate key error") {
-			a.clientError(w, http.StatusConflict, ErrDuplicateKey)
+			w.Header().Set("Location", "https://www.blockride.xyz/")
+			http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusConflict)
 			return
 		}
+		
 		a.serverError(w)
 		a.logger.LogAttrs(context.TODO(), slog.LevelError, err.Error())
 		return

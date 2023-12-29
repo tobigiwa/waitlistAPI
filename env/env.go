@@ -70,3 +70,19 @@ func GetEnvVar() Environment {
 func BuildURI(username, password, host string) string {
 	return "mongodb+srv://" + username + ":" + password + "@" + host + "/?retryWrites=true&w=majority"
 }
+
+func SetDefaults() {
+	if environment.Server.Env == "" {
+		environment.Server.Env = "development"
+	}
+
+	if environment.Databases.Mongo.Database == "" {
+		environment.Databases.Mongo.Database = "waitlist"
+	}
+	if environment.Databases.Mongo.Collection == "" {
+		environment.Databases.Mongo.Collection = "users"
+	}
+	if environment.Server.Port == "" {
+		environment.Server.Port = "8090"
+	}
+}
