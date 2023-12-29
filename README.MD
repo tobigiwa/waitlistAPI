@@ -16,11 +16,17 @@
 
 > added containerisation with Docker
 
-#### _version: 1.0.1_ - minor release
+#### _version: 1.0.2_ - minor patch
+
+#### _version: 1.0.2_ - minor patch
 
 ## START SERVER
 
 ### DEV MODE:
+
+> $ make setup
+
+> add your .env to the bin/ created folder
 
 > $ make dev
 

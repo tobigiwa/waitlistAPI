@@ -21,7 +21,13 @@ swagger:
 	@swag init -d cmd/blockride/,http/
 	@swag fmt --exclude internal/,templ/,env/
 
-dev: tidy swagger build run
+
+instuction:
+	@echo "Now add your .env to the bin/ created bin folder and run 'make dev'"
+
+setup:tidy swagger build instuction
+
+dev: run
 
 prod: tidy build
 
