@@ -4,15 +4,21 @@ LABEL maintainer = "Giwa Oluwatobi, giwaoluwatobi@gmail.com"
 
 WORKDIR /app
 
-COPY . /app
+COPY go.mod go.sum ./
 
-RUN go mod tidy
-RUN go build -o bin/BlockRide cmd/blockride/main.go
+# vendoring instead
+# RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -mod vendor -o /app/blockride cmd/blockride/main.go
 
 FROM alpine 
 
-WORKDIR /root/
+WORKDIR /
 
-COPY --from=builder /app/bin/BlockRide /root/
+COPY --from=builder /app/blockride /blockride
 
-CMD ./BlockRide
+RUN chmod +x blockride
+
+ENTRYPOINT [ "/blockride" ]
