@@ -27,7 +27,8 @@ instuction:
 
 setup:tidy swagger build instuction
 
-dev: run
+dev: setup run
 
-prod: tidy build
+prod:
+	@echo "YOUR PRODUCTION ENVIROMMENT MATTERS FIRST"
 
