@@ -1,8 +1,8 @@
 package http
 
 import (
-	"Blockride-waitlistAPI/env"
-	"Blockride-waitlistAPI/internal/store"
+	"companyXYZ-waitlistAPI/env"
+	"companyXYZ-waitlistAPI/internal/store"
 	"context"
 	"encoding/json"
 	"errors"
@@ -20,7 +20,7 @@ import (
 //	@Accept			x-www-form-urlencoded
 //	@Produce		json
 //	@Success		200				{string}	string	"OK"
-//	@Param			name			formData	string	true	"Users any preferred name"
+//	@Param			name			formData	string	true	"user any preferred name"
 //	@Param			email			formData	string	true	"valid email address"	Format(email)
 //	@Param			country			formData	string	true	"country"
 //	@Param			splWalletAddr	formData	string	true	"SPL wallet Address"
@@ -67,8 +67,8 @@ func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if a.repository.CheckIfUserExist(subscriber) {
-		w.Header().Set("Location", "https://www.blockride.xyz/")
-		http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusConflict)
+		w.Header().Set("Location", "https://www.companyXYZ.xyz/")
+		http.Redirect(w, r, "https://www.companyXYZ.xyz/", http.StatusConflict)
 		return
 	}
 
@@ -84,8 +84,8 @@ func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Location", "https://www.blockride.xyz/")
-	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusOK)
+	w.Header().Set("Location", "https://www.companyXYZ.xyz/")
+	http.Redirect(w, r, "https://www.companyXYZ.xyz/", http.StatusOK)
 }
 
 // ConfirmAndSaveHandler
@@ -95,7 +95,7 @@ func (a Application) waitListHandler(w http.ResponseWriter, r *http.Request) {
 //	@Tags			application
 //	@Produce		json
 //	@Param			k	query		string	true	"BASE64 ENCODED STRING"
-//	@Success		200	{string}	string	"REDIRECT TO BLOCKRIDE HOMEPAGE"
+//	@Success		200	{string}	string	"REDIRECT TO companyXYZ HOMEPAGE"
 //	@Failure		400	{string}	string	"CLIENT ERROR: BAD REQUEST, KEY MISSING IN REQUEST"
 //	@Failure		404	{string}	string	"CLIENT ERROR: NOT FOUND, LINK/KEY EXPIRED"
 //	@Failure		409	{string}	string	"CLIENT ERROR: USER WITH EMAIL ALREADY EXIST"
@@ -127,18 +127,18 @@ func (a Application) confirmAndSaveHandler(w http.ResponseWriter, r *http.Reques
 
 	if err := a.repository.SaveToDb(user); err != nil {
 		if strings.Contains(err.Error(), "duplicate key error") {
-			w.Header().Set("Location", "https://www.blockride.xyz/")
-			http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusConflict)
+			w.Header().Set("Location", "https://www.companyXYZ.xyz/")
+			http.Redirect(w, r, "https://www.companyXYZ.xyz/", http.StatusConflict)
 			return
 		}
-		
+
 		a.serverError(w)
 		a.logger.LogAttrs(context.TODO(), slog.LevelError, err.Error())
 		return
 	}
 
-	w.Header().Set("Location", "https://www.blockride.xyz/")
-	http.Redirect(w, r, "https://www.blockride.xyz/", http.StatusOK)
+	w.Header().Set("Location", "https://www.companyXYZ.xyz/")
+	http.Redirect(w, r, "https://www.companyXYZ.xyz/", http.StatusOK)
 }
 
 type ServerStatus struct {

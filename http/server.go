@@ -1,7 +1,7 @@
 package http
 
 import (
-	"Blockride-waitlistAPI/internal/store"
+	"companyXYZ-waitlistAPI/internal/store"
 	"log/slog"
 
 	"go.mongodb.org/mongo-driver/mongo"

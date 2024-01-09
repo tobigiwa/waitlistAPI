@@ -5,5 +5,5 @@ import "embed"
 //go:embed mail.html
 var EmailHTML embed.FS
 
-//go:embed BlockRideLogo.png
-var BlockRideLogo embed.FS
+//go:embed companyXYZLogo.png
+var CompanyXYZLogo embed.FS

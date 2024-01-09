@@ -1,10 +1,10 @@
 package http
 
 import (
-	"Blockride-waitlistAPI/env"
-	"Blockride-waitlistAPI/internal/store"
-	"Blockride-waitlistAPI/templ"
 	"bytes"
+	"companyXYZ-waitlistAPI/env"
+	"companyXYZ-waitlistAPI/internal/store"
+	"companyXYZ-waitlistAPI/templ"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -26,27 +26,27 @@ type templData struct {
 func sendConfirmationMail(name, email, key string) error {
 
 	var (
-		from     = env.GetEnvVar().Mail.EmailAcc
-		tpl      bytes.Buffer
-		s        = templData{Name: name, Key: key}
-		data     []byte
-		err      error
+		from = env.GetEnvVar().Mail.EmailAcc
+		tpl  bytes.Buffer
+		s    = templData{Name: name, Key: key}
+		data []byte
+		err  error
 	)
-	
+
 	m := gomail.NewMessage()
 	m.SetHeader("From", from)
 	m.SetHeader("To", email)
-	m.SetHeader("Subject", "BlockRide Confirmation mail")
+	m.SetHeader("Subject", "companyXYZ Confirmation mail")
 
 	if err = prepareMail(s, &tpl); err != nil {
 		return err
 	}
 
-	if data, err = templ.BlockRideLogo.ReadFile("BlockRideLogo.png"); err != nil {
+	if data, err = templ.CompanyXYZLogo.ReadFile("companyXYZLogo.png"); err != nil {
 		return err
 	}
-	m.Attach("BlockRideLogo.png", gomail.SetHeader(map[string][]string{
-		"Content-ID": {"BlockRideLogo"},
+	m.Attach("companyXYZLogo.png", gomail.SetHeader(map[string][]string{
+		"Content-ID": {"companyXYZLogo"},
 	}), gomail.SetCopyFunc(func(w io.Writer) error {
 		_, err := w.Write(data)
 		return err

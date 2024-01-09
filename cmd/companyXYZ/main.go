@@ -1,9 +1,9 @@
 package main
 
 import (
-	"Blockride-waitlistAPI/env"
-	blockride "Blockride-waitlistAPI/http"
-	"Blockride-waitlistAPI/internal/store"
+	"companyXYZ-waitlistAPI/env"
+	companyXYZ "companyXYZ-waitlistAPI/http"
+	"companyXYZ-waitlistAPI/internal/store"
 	"context"
 	"errors"
 	"log"
@@ -16,20 +16,20 @@ import (
 
 	"strings"
 
-	"Blockride-waitlistAPI/docs"
+	"companyXYZ-waitlistAPI/docs"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-//	@title						BlockRide waitlist-backend
-//	@description				BlockRide waitlist-backend API endpoints.
+//	@title						companyXYZ waitlist-backend
+//	@description				companyXYZ waitlist-backend API endpoints.
 //	@x-logo						{"url": "https://example.com/img.png", "backgroundColor": "#000000", "altText": "example logo", "href": "https://example.com/img.png"}
 //
-// contact.name   BlockRide
+// contact.name   companyXYZ
 //
-//	@contact.url				https://www.blockride.xyz/
+//	@contact.url				https://www.companyXYZ.xyz/
 //
 // contact.email  giwaoluwatobi@gmail.com
 //
@@ -62,7 +62,7 @@ func main() {
 	)
 
 	uri = "mongodb://localhost:27017/"
-	if env.GetEnvVar().Server.Env == blockride.Production {
+	if env.GetEnvVar().Server.Env == companyXYZ.Production {
 		uri = env.BuildURI(
 			env.GetEnvVar().Databases.Mongo.Username,
 			env.GetEnvVar().Databases.Mongo.Password,
@@ -87,7 +87,7 @@ func main() {
 	log.Println("MongoDB collection indexed by `email` field successfully")
 
 	// setup Application Server
-	app := blockride.NewApplication(mongoDbCollection, logger)
+	app := companyXYZ.NewApplication(mongoDbCollection, logger)
 
 	srv := &http.Server{
 		Addr:         ":" + env.GetEnvVar().Server.Port,

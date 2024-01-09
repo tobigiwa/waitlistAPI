@@ -1,4 +1,4 @@
-![Logo](/templ/BlockRideLogo.png)
+![Logo](/templ/companyXYZLogo.png)
 
 # Waitlist Backend
 

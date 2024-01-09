@@ -10,7 +10,7 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "url": "https://www.blockride.xyz/"
+            "url": "https://www.companyXYZ.xyz/"
         },
         "version": "{{.Version}}",
         "x-logo": {
@@ -44,7 +44,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "REDIRECT TO BLOCKRIDE HOMEPAGE",
+                        "description": "REDIRECT TO companyXYZ HOMEPAGE",
                         "schema": {
                             "type": "string"
                         }
@@ -118,7 +118,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Users any preferred name",
+                        "description": "user any preferred name",
                         "name": "name",
                         "in": "formData",
                         "required": true
@@ -202,8 +202,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "BlockRide waitlist-backend",
-	Description:      "BlockRide waitlist-backend API endpoints.",
+	Title:            "companyXYZ waitlist-backend",
+	Description:      "companyXYZ waitlist-backend API endpoints.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

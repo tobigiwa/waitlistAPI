@@ -1,7 +1,7 @@
 package http
 
 import (
-	"Blockride-waitlistAPI/env"
+	"companyXYZ-waitlistAPI/env"
 	"net/http"
 	"time"
 
@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	blockrideHOMEURL string = "https://www.blockride.xyz/"
-	Production       string = "production"
+	companyXYZHOMEURL string = "https://www.companyXYZ.xyz/"
+	Production        string = "production"
 )
 
 func (a Application) Routes() *chi.Mux {
@@ -51,5 +51,5 @@ func (a Application) Routes() *chi.Mux {
 }
 
 func AllowOriginFunc(r *http.Request, origin string) bool {
-	return origin == blockrideHOMEURL
+	return origin == companyXYZHOMEURL
 }

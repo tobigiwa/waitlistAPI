@@ -1,10 +1,10 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "BlockRide waitlist-backend API endpoints.",
-        "title": "BlockRide waitlist-backend",
+        "description": "companyXYZ waitlist-backend API endpoints.",
+        "title": "companyXYZ waitlist-backend",
         "contact": {
-            "url": "https://www.blockride.xyz/"
+            "url": "https://www.companyXYZ.xyz/"
         },
         "x-logo": {
             "altText": "example logo",
@@ -35,7 +35,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "REDIRECT TO BLOCKRIDE HOMEPAGE",
+                        "description": "REDIRECT TO companyXYZ HOMEPAGE",
                         "schema": {
                             "type": "string"
                         }
@@ -109,7 +109,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Users any preferred name",
+                        "description": "user any preferred name",
                         "name": "name",
                         "in": "formData",
                         "required": true

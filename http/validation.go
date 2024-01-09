@@ -1,7 +1,7 @@
 package http
 
 import (
-	"Blockride-waitlistAPI/internal/store"
+	"companyXYZ-waitlistAPI/internal/store"
 
 	solana "github.com/blocto/solana-go-sdk/common"
 	"github.com/go-playground/validator/v10"

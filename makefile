@@ -1,4 +1,4 @@
-BINARY_NAME=BlockRide
+BINARY_NAME=companyXYZ
 
 run:
 	@echo "Running server"
@@ -10,7 +10,7 @@ tidy:
 
 build:
 	@echo "Building binary"
-	@go build -o bin/${BINARY_NAME} cmd/blockride/main.go
+	@go build -o bin/${BINARY_NAME} cmd/companyXYZ/main.go
 
 test:
 	@echo "Running all test"
@@ -18,7 +18,7 @@ test:
 
 swagger:
 	@echo "Generating swagger"
-	@swag init -d cmd/blockride/,http/
+	@swag init -d cmd/companyXYZ/,http/
 	@swag fmt --exclude internal/,templ/,env/
 
 

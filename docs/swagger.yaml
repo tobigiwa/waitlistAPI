@@ -12,9 +12,9 @@ externalDocs:
   description: OpenAPI
 info:
   contact:
-    url: https://www.blockride.xyz/
-  description: BlockRide waitlist-backend API endpoints.
-  title: BlockRide waitlist-backend
+    url: https://www.companyXYZ.xyz/
+  description: companyXYZ waitlist-backend API endpoints.
+  title: companyXYZ waitlist-backend
   x-logo:
     altText: example logo
     backgroundColor: '#000000'
@@ -34,7 +34,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: REDIRECT TO BLOCKRIDE HOMEPAGE
+          description: REDIRECT TO companyXYZ HOMEPAGE
           schema:
             type: string
         "400":
@@ -79,7 +79,7 @@ paths:
       - application/x-www-form-urlencoded
       description: sends user registration email
       parameters:
-      - description: Users any preferred name
+      - description: user any preferred name
         in: formData
         name: name
         required: true

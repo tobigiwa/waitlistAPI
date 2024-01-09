@@ -11,14 +11,14 @@ COPY go.mod go.sum ./
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -mod vendor -o /app/blockride cmd/blockride/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -mod vendor -o /app/companyXYZ cmd/companyXYZ/main.go
 
 FROM alpine 
 
 WORKDIR /
 
-COPY --from=builder /app/blockride /blockride
+COPY --from=builder /app/companyXYZ /companyXYZ
 
-RUN chmod +x blockride
+RUN chmod +x companyXYZ
 
-ENTRYPOINT [ "/blockride" ]
+ENTRYPOINT [ "/companyXYZ" ]

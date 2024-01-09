@@ -1,4 +1,4 @@
-module Blockride-waitlistAPI
+module companyXYZ-waitlistAPI
 
 go 1.21.4
 
